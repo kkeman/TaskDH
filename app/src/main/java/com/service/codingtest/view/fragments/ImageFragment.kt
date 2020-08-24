@@ -1,15 +1,20 @@
 package com.service.codingtest.view.fragments
 
+import android.app.Application
 import android.os.Bundle
 import android.view.*
+import androidx.activity.viewModels
 import androidx.appcompat.widget.PopupMenu
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.*
 import androidx.paging.LoadState
+import androidx.savedstate.SavedStateRegistryOwner
 import com.service.codingtest.R
 import com.service.codingtest.databinding.FragImageBinding
+import com.service.codingtest.manager.AppDB
 import com.service.codingtest.network.Constant
+import com.service.codingtest.network.ImageAPI
+import com.service.codingtest.repository.DbImagePostRepository
 import com.service.codingtest.view.adapters.ImageAdapter
 import com.service.codingtest.view.adapters.ImageLoadStateAdapter
 import com.service.codingtest.viewmodel.ImageListViewModel
@@ -28,6 +33,36 @@ class ImageFragment : Fragment() {
 
     private lateinit var adapter: ImageAdapter
 
+//    private val model: ImageListViewModel by viewModels {
+//        object : AbstractSavedStateViewModelFactory(this, null) {
+//            override fun <T : ViewModel?> create(
+//                key: String,
+//                modelClass: Class<T>,
+//                handle: SavedStateHandle
+//            ): T {
+//                @Suppress("UNCHECKED_CAST")
+//                return ImageListViewModel(handle) as T
+//            }
+//        }
+//    }
+
+    class MainViewModelFactory(owner: SavedStateRegistryOwner, private val documentRepository :DbImagePostRepository) : AbstractSavedStateViewModelFactory(owner, null) {
+        override fun <T : ViewModel?> create(key: String, modelClass: Class<T>, handle: SavedStateHandle): T {
+//            val repoTypeParam = intent.getIntExtra(KEY_REPOSITORY_TYPE, 0)
+//            val repoType = RedditPostRepository.Type.values()[repoTypeParam]
+//            val repo = ServiceLocator.instance(this@RedditActivity)
+//                .getRepository(repoType)
+            @Suppress("UNCHECKED_CAST")
+            return ImageListViewModel(handle, documentRepository) as T
+        }
+//        override fun <T : ViewModel?> create(modelClass: Class<T>): T {
+//            if (modelClass.isAssignableFrom(ImageListViewModel::class.java)) {
+//                return ImageListViewModel(AppDB.getInstance(context.applicationContext as Application)) as T
+//            }
+//            throw IllegalArgumentException("Unknown ViewModel class")
+//        }
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -35,10 +70,16 @@ class ImageFragment : Fragment() {
     ): View? {
         val view = inflater.inflate(R.layout.frag_image, container, false)
         binding = FragImageBinding.bind(view)
-        binding.vm = ViewModelProvider(this, defaultViewModelProviderFactory)
+//        binding.vm = ViewModelProvider(this, defaultViewModelProviderFactory)
+        binding.vm = ViewModelProvider(requireActivity(), MainViewModelFactory(this, DbImagePostRepository(AppDB.getInstance(context!!.applicationContext as Application), ImageAPI.create())))
             .get(ImageListViewModel::class.java)
+//        AppDB.getInstance(context.applicationContext as Application)
 
-        setHasOptionsMenu(true)
+
+
+        //        ImageListViewModel(this, DbImagePostRepository(AppDB.getInstance(context.applicationContext as Application), ImageAPI.create()))
+//        DbImagePostRepository(AppDB.getInstance(context.applicationContext as Application), ImageAPI.create())
+
         return binding.root
     }
 
@@ -58,7 +99,6 @@ class ImageFragment : Fragment() {
         )
 
         binding.vm!!.apply {
-            filterList.clear()
             lifecycleScope.launchWhenCreated {
                 @OptIn(ExperimentalCoroutinesApi::class)
                 posts.collectLatest {
@@ -95,34 +135,4 @@ class ImageFragment : Fragment() {
             }
             false
         })
-
-
-    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) =
-        inflater.inflate(R.menu.fragment_menu_list, menu)
-
-    override fun onOptionsItemSelected(item: MenuItem) =
-        when (item.itemId) {
-            R.id.menu_filter -> {
-                showFilteringPopUpMenu()
-                true
-            }
-            else -> false
-        }
-
-    private fun showFilteringPopUpMenu() {
-        val view = activity?.findViewById<View>(R.id.menu_filter) ?: return
-        PopupMenu(requireContext(), view).run {
-            menu.add(Constant.MENU_ALL)
-
-            for (item in binding.vm!!.filterList)
-                menu.add(item)
-
-            setOnMenuItemClickListener {
-                binding.vm!!.filterSelected = it.title.toString()
-                binding.vm!!.showSubreddit()
-                true
-            }
-            show()
-        }
-    }
 }

@@ -40,7 +40,7 @@
                     android:scrollbars="vertical"
                     tools:listitem="@layout/item_image"
                     app:layoutManager="androidx.recyclerview.widget.StaggeredGridLayoutManager"
-                    app:spanCount="2" />
+                    app:spanCount="1" />
             </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
         </LinearLayout>
     </androidx.coordinatorlayout.widget.CoordinatorLayout>

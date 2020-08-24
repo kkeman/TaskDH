@@ -2,7 +2,7 @@ package com.service.codingtest.manager
 
 import androidx.paging.PagingSource
 import androidx.paging.PagingSource.LoadResult.Page
-import com.service.codingtest.model.response.DocumentData
+import com.service.codingtest.model.response.Items
 import com.service.codingtest.network.Constant
 import com.service.codingtest.network.ImageAPI
 import retrofit2.HttpException
@@ -12,27 +12,14 @@ import java.io.IOException
 class ImagePagingSource(
     private val httpClient: ImageAPI,
     private val query: String,
-    private val filterList: ArrayList<String>,
-    private val filter: String
-) : PagingSource<Int, DocumentData>() {
+) : PagingSource<Int, Items>() {
 
     private val initialPageIndex: Int = 1
 
-    override suspend fun load(params: LoadParams<Int>): LoadResult<Int, DocumentData> {
+    override suspend fun load(params: LoadParams<Int>): LoadResult<Int, Items> {
         val position = params.key ?: initialPageIndex
         return try {
-            var items = httpClient.getAPI(query = query, page = position).documents
-
-            if (filter == Constant.MENU_ALL) {
-
-                for (item in items)
-                    filterList.apply {
-                        if (!contains(item.collection))
-                            add(item.collection)
-                    }
-
-            } else
-                items = items.filter { data -> data.collection == filter }
+            val items = httpClient.getAPI(query = query, page = position).items
 
             Page(
                 data = items,

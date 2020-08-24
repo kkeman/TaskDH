@@ -10,10 +10,9 @@ import retrofit2.http.*
 
 interface ImageAPI {
 
-    @Headers("Authorization: KakaoAK 6cae7690bf9df02d30598706a4c3bd95")
-    @GET("v2/search/image")
+    @GET("search/users")
     suspend fun getAPI(
-        @Query("query") query: String? = null,
+        @Query("q") query: String? = null,
         @Query("page") page: Int? = 0)
             : JsonData
 
