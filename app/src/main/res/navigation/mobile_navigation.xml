@@ -11,4 +11,10 @@
         android:label="@string/image"
         tools:layout="@layout/frag_image" />
 
+    <fragment
+        android:id="@+id/navigation_favorite"
+        android:name="com.service.codingtest.view.fragments.FavoriteFragment"
+        android:label="@string/favorite"
+        tools:layout="@layout/frag_favorite" />
+
 </navigation>

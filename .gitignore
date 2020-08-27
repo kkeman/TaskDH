@@ -8,3 +8,6 @@
 /build
 /captures
 .externalNativeBuild
+app/src/main/java/com/service/codingtest/model/response/FavoriteEntity.kt
+app/src/main/java/com/service/codingtest/model/response/FavoriteEntity.kt
+*.kt

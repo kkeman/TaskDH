@@ -4,5 +4,5 @@ import com.google.gson.annotations.SerializedName
 
 data class JsonData(
         @SerializedName("items")
-        val items: List<Items>
+        val items: List<ItemsEntity>
 )

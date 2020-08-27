@@ -98,12 +98,10 @@ class ImageFragment : Fragment() {
             footer = ImageLoadStateAdapter(adapter)
         )
 
-        binding.vm!!.apply {
-            lifecycleScope.launchWhenCreated {
-                @OptIn(ExperimentalCoroutinesApi::class)
-                posts.collectLatest {
-                    adapter.submitData(it)
-                }
+        lifecycleScope.launchWhenCreated {
+            @OptIn(ExperimentalCoroutinesApi::class)
+            binding.vm!!.posts.collectLatest {
+                adapter.submitData(it)
             }
         }
 

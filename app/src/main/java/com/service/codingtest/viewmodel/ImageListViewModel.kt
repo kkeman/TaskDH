@@ -1,23 +1,17 @@
 package com.service.codingtest.viewmodel
 
-import android.app.Application
 import androidx.databinding.ObservableField
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.asFlow
 import androidx.paging.PagingData
-import com.service.codingtest.manager.AppDB
-import com.service.codingtest.network.ImageAPI
 import com.service.codingtest.repository.DbImagePostRepository
-import com.service.codingtest.repository.ImageRepository
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.*
 
 class ImageListViewModel(private val savedStateHandle: SavedStateHandle, private val documentRepository :DbImagePostRepository) : ViewModel() {
-
-//    private val documentRepository: ImageRepository
 
     companion object {
         const val KEY_SEARCH = "search"
@@ -26,11 +20,6 @@ class ImageListViewModel(private val savedStateHandle: SavedStateHandle, private
     val searchWord = ObservableField("target")
 
     private val clearListCh = Channel<Unit>(Channel.CONFLATED)
-
-    init {
-//        documentRepository = InMemoryByItemRepository(ImageAPI.create())
-//        documentRepository = DbImagePostRepository(AppDB.getInstance(context.applicationContext as Application), ImageAPI.create())
-    }
 
     @OptIn(ExperimentalCoroutinesApi::class, FlowPreview::class)
     val posts = flowOf(
