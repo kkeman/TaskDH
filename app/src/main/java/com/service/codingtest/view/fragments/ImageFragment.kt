@@ -3,21 +3,20 @@ package com.service.codingtest.view.fragments
 import android.app.Application
 import android.os.Bundle
 import android.view.*
-import androidx.activity.viewModels
-import androidx.appcompat.widget.PopupMenu
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.*
 import androidx.paging.LoadState
 import androidx.savedstate.SavedStateRegistryOwner
 import com.service.codingtest.R
 import com.service.codingtest.databinding.FragImageBinding
-import com.service.codingtest.manager.AppDB
-import com.service.codingtest.network.Constant
+import com.service.codingtest.db.AppDB
 import com.service.codingtest.network.ImageAPI
 import com.service.codingtest.repository.DbImagePostRepository
 import com.service.codingtest.view.adapters.ImageAdapter
 import com.service.codingtest.view.adapters.ImageLoadStateAdapter
 import com.service.codingtest.viewmodel.ImageListViewModel
+import com.service.codingtest.viewmodel.SharedViewModel
 import kotlinx.android.synthetic.main.frag_image.*
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
@@ -33,34 +32,13 @@ class ImageFragment : Fragment() {
 
     private lateinit var adapter: ImageAdapter
 
-//    private val model: ImageListViewModel by viewModels {
-//        object : AbstractSavedStateViewModelFactory(this, null) {
-//            override fun <T : ViewModel?> create(
-//                key: String,
-//                modelClass: Class<T>,
-//                handle: SavedStateHandle
-//            ): T {
-//                @Suppress("UNCHECKED_CAST")
-//                return ImageListViewModel(handle) as T
-//            }
-//        }
-//    }
+    private val model: SharedViewModel by activityViewModels()
 
     class MainViewModelFactory(owner: SavedStateRegistryOwner, private val documentRepository :DbImagePostRepository) : AbstractSavedStateViewModelFactory(owner, null) {
         override fun <T : ViewModel?> create(key: String, modelClass: Class<T>, handle: SavedStateHandle): T {
-//            val repoTypeParam = intent.getIntExtra(KEY_REPOSITORY_TYPE, 0)
-//            val repoType = RedditPostRepository.Type.values()[repoTypeParam]
-//            val repo = ServiceLocator.instance(this@RedditActivity)
-//                .getRepository(repoType)
             @Suppress("UNCHECKED_CAST")
             return ImageListViewModel(handle, documentRepository) as T
         }
-//        override fun <T : ViewModel?> create(modelClass: Class<T>): T {
-//            if (modelClass.isAssignableFrom(ImageListViewModel::class.java)) {
-//                return ImageListViewModel(AppDB.getInstance(context.applicationContext as Application)) as T
-//            }
-//            throw IllegalArgumentException("Unknown ViewModel class")
-//        }
     }
 
     override fun onCreateView(
@@ -70,15 +48,9 @@ class ImageFragment : Fragment() {
     ): View? {
         val view = inflater.inflate(R.layout.frag_image, container, false)
         binding = FragImageBinding.bind(view)
-//        binding.vm = ViewModelProvider(this, defaultViewModelProviderFactory)
-        binding.vm = ViewModelProvider(requireActivity(), MainViewModelFactory(this, DbImagePostRepository(AppDB.getInstance(context!!.applicationContext as Application), ImageAPI.create())))
+        binding.vm = ViewModelProvider(requireActivity(), MainViewModelFactory(this, DbImagePostRepository(
+            AppDB.getInstance(requireContext().applicationContext as Application), ImageAPI.create())))
             .get(ImageListViewModel::class.java)
-//        AppDB.getInstance(context.applicationContext as Application)
-
-
-
-        //        ImageListViewModel(this, DbImagePostRepository(AppDB.getInstance(context.applicationContext as Application), ImageAPI.create()))
-//        DbImagePostRepository(AppDB.getInstance(context.applicationContext as Application), ImageAPI.create())
 
         return binding.root
     }
@@ -97,6 +69,10 @@ class ImageFragment : Fragment() {
             header = ImageLoadStateAdapter(adapter),
             footer = ImageLoadStateAdapter(adapter)
         )
+
+        model.text.observe(viewLifecycleOwner, {
+            adapter.notifyDataSetChanged()
+        })
 
         lifecycleScope.launchWhenCreated {
             @OptIn(ExperimentalCoroutinesApi::class)
@@ -133,4 +109,5 @@ class ImageFragment : Fragment() {
             }
             false
         })
+
 }

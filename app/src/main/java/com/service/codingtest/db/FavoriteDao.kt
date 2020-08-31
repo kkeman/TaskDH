@@ -15,12 +15,6 @@ interface FavoriteDao {
     @Update
     fun update(items: FavoriteEntity): Int
 
-//    @Query("SELECT * FROM Favorite ORDER BY saveTime ASC")
-//    fun loadAllSortSaveTime(): LiveData<List<FavoriteEntity>>
-//
-//    @Query("SELECT * FROM Favorite ORDER BY rate DESC")
-//    fun loadAllSortRate(): LiveData<List<FavoriteEntity>>
-
     @Query("SELECT * FROM Favorite")
     fun loadAll(): LiveData<List<FavoriteEntity>>
 

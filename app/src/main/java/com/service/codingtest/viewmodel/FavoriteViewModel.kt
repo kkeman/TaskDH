@@ -8,7 +8,4 @@ import com.service.codingtest.model.response.FavoriteEntity
 class FavoriteViewModel : ViewModel() {
 
     var list : LiveData<List<FavoriteEntity>> = liveData {  }
-
-
-
 }

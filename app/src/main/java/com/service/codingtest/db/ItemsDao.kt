@@ -13,19 +13,10 @@ interface ItemsDao {
     fun delete(items: ItemsEntity)
 
     @Update
-    fun update(items: ItemsEntity): Int
-
-//    @Query("SELECT * FROM Favorite ORDER BY saveTime ASC")
-//    fun loadAllSortSaveTime(): LiveData<List<FavoriteEntity>>
-//
-//    @Query("SELECT * FROM Favorite ORDER BY rate DESC")
-//    fun loadAllSortRate(): LiveData<List<FavoriteEntity>>
+    suspend fun update(items: ItemsEntity)
 
     @Query("SELECT * FROM Items WHERE searchWord = :searchWord")
     fun loadAll(searchWord: String): PagingSource<Int, ItemsEntity>
-
-    @Query("SELECT * FROM Items")
-    fun loadAll2(): List<ItemsEntity>
 
     @Query("SELECT EXISTS(SELECT * FROM Items WHERE id=:id)")
     fun exist(id: Int): Boolean
@@ -33,6 +24,8 @@ interface ItemsDao {
     @Query("DELETE FROM Items WHERE searchWord = :searchWord")
     suspend fun deleteBySubreddit(searchWord: String)
 
+    @Query("UPDATE Items SET isFavorite = :isFavorite WHERE id = :id")
+    fun updateisFavorite(id: Int, isFavorite: Boolean)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertAll(posts: List<ItemsEntity>)

@@ -7,7 +7,7 @@ import com.service.codingtest.network.ImageAPI
 import retrofit2.HttpException
 import java.io.IOException
 
-
+ /* unused */
 class ImagePagingSource(
     private val httpClient: ImageAPI,
     private val query: String,

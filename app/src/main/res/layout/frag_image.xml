@@ -39,8 +39,7 @@
                     android:layout_height="match_parent"
                     android:scrollbars="vertical"
                     tools:listitem="@layout/item_image"
-                    app:layoutManager="androidx.recyclerview.widget.StaggeredGridLayoutManager"
-                    app:spanCount="1" />
+                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
             </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
         </LinearLayout>
     </androidx.coordinatorlayout.widget.CoordinatorLayout>

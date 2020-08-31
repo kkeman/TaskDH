@@ -9,12 +9,15 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.service.codingtest.R
-import com.service.codingtest.manager.AppDB
+import com.service.codingtest.db.AppDB
 import com.service.codingtest.model.response.FavoriteEntity
 import com.service.codingtest.model.response.ItemsEntity
+import com.service.codingtest.network.MLog
 import kotlinx.android.synthetic.main.item_image.view.*
 
 class ImageAdapter: PagingDataAdapter<ItemsEntity, ImageAdapter.ViewHolder>(ChatDiffCallback) {
+
+    private val TAG = ImageAdapter::class.java.name
 
     override fun onCreateViewHolder(viewGroup: ViewGroup, viewType: Int): ViewHolder {
         val v = LayoutInflater.from(viewGroup.context).inflate(R.layout.item_image, viewGroup, false)
@@ -30,19 +33,31 @@ class ImageAdapter: PagingDataAdapter<ItemsEntity, ImageAdapter.ViewHolder>(Chat
 
         holder.tv_title.text = data.login
 
-//        holder.cb_favorite.isChecked = data.isFavorite
+        holder.cb_favorite.setOnCheckedChangeListener(null)
+        holder.cb_favorite.isChecked = data.isFavorite
         holder.cb_favorite.setOnCheckedChangeListener { compoundButton, b ->
+
+//            data.isFavorite = b
+//            AppDB.getInstance(holder.itemView.context).imageDao().update(data)
+
+            AppDB.getInstance(holder.itemView.context).imageDao().updateisFavorite(data.id, b)
+
             val favoriteEntity = FavoriteEntity(
-                data.searchWord,
                 data.id,
                 data.login,
-                data.avatar_url
+                data.avatar_url,
+                data.searchWord,
             )
-            if (b)
+            if (b) {
                 AppDB.getInstance(holder.itemView.context).favoriteDao().insert(favoriteEntity)
-            else
+            } else {
                 AppDB.getInstance(holder.itemView.context).favoriteDao().delete(favoriteEntity)
+            }
+
+            MLog.d(TAG, data.login +  " / " + b + " setOnCheckedChangeListener")
         }
+
+        MLog.d(TAG, data.login +  " / " + data.isFavorite + " / "+data.id)
     }
 
     class ViewHolder(v: View) : RecyclerView.ViewHolder(v) {
@@ -59,7 +74,7 @@ class ImageAdapter: PagingDataAdapter<ItemsEntity, ImageAdapter.ViewHolder>(Chat
             }
 
             override fun areContentsTheSame(oldItem: ItemsEntity, newItem: ItemsEntity): Boolean {
-                return oldItem == newItem
+                return oldItem.login == newItem.login
             }
 
             override fun getChangePayload(oldItem: ItemsEntity, newItem: ItemsEntity): Any? {
@@ -72,7 +87,7 @@ class ImageAdapter: PagingDataAdapter<ItemsEntity, ImageAdapter.ViewHolder>(Chat
         }
 
         private fun sameExceptScore(oldItem: ItemsEntity, newItem: ItemsEntity): Boolean {
-            return oldItem.copy(id = newItem.id) == newItem
+            return oldItem.copy(login = newItem.login) == newItem
         }
     }
 }

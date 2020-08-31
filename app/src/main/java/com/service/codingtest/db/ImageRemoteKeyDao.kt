@@ -20,15 +20,15 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
-import com.service.codingtest.model.response.ImageRemoteKey
+import com.service.codingtest.model.response.ImageRemoteKeyEntity
 
 @Dao
 interface ImageRemoteKeyDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insert(keys: ImageRemoteKey)
+    suspend fun insert(keys: ImageRemoteKeyEntity)
 
     @Query("SELECT * FROM remote_keys WHERE searchWord = :searchWord")
-    suspend fun remoteKeyBySearchWord(searchWord: String): ImageRemoteKey
+    suspend fun remoteKeyBySearchWord(searchWord: String): ImageRemoteKeyEntity
 
     @Query("DELETE FROM remote_keys WHERE searchWord = :searchWord")
     suspend fun deleteBySearchWord(searchWord: String)

@@ -16,10 +16,11 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.service.codingtest.R
 import com.service.codingtest.databinding.FragFavoriteBinding
-import com.service.codingtest.manager.AppDB
+import com.service.codingtest.db.AppDB
 import com.service.codingtest.network.MLog
 import com.service.codingtest.view.adapters.FavoriteAdapter
 import com.service.codingtest.viewmodel.FavoriteViewModel
+import com.service.codingtest.viewmodel.SharedViewModel
 
 class FavoriteFragment : Fragment() {
 
@@ -27,12 +28,8 @@ class FavoriteFragment : Fragment() {
 
     private var mMediaFileAdapter: FavoriteAdapter? = null
 
-    private var mLikeReceiver: LikeReceiver? = null
-
     private lateinit var viewDataBinding: FragFavoriteBinding
     private val viewModel by viewModels<FavoriteViewModel>()
-//
-//    private val mainViewModel by activityViewModels<MainViewModel>()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         viewDataBinding = FragFavoriteBinding.bind(inflater.inflate(R.layout.frag_favorite, container, false)).apply { viewmodel = viewModel  }
@@ -47,7 +44,6 @@ class FavoriteFragment : Fragment() {
     }
 
     private fun init() {
-//        initData()
         setList()
         initSwipeRefresh()
     }
@@ -55,37 +51,15 @@ class FavoriteFragment : Fragment() {
     private fun setList() {
         setRecyclerViewLayoutManager()
 
-//        mMediaFileAdapter = LikeAdapter(ArrayList<LikeEntity>(), activity!!)
-//        mBinding.rvMediaFileList.adapter = mMediaFileAdapter
-
         setMediaDBList()
     }
 
     fun setMediaDBList() {
-//        val folder = File(Util.getPicturesDir(activity!!))
-//        val fileList = folder.listFiles()
-//        val docList = mutableListOf<String>()
-//
-//        Observable.just(fileList)
-//                .map {
-//                    for (file in it)
-//                        docList.add(file.path)
-//                    docList
-//                }
-//                .subscribeOn(Schedulers.computation()).observeOn(AndroidSchedulers.mainThread())
-//                .subscribe {
-//                    mMediaFileAdapter!!.submitList(it)
-//                }.addTo((activity as BaseActivity).cDisposable)
-
-
-
-
         viewModel.list = AppDB.getInstance(requireContext()).favoriteDao().loadAll()
 
-        viewModel.list.observe(viewLifecycleOwner, Observer {
-            mMediaFileAdapter = FavoriteAdapter(it, requireActivity())
+        viewModel.list.observe(viewLifecycleOwner, {
+            mMediaFileAdapter = FavoriteAdapter(it)
             viewDataBinding.rvMediaFileList.adapter = mMediaFileAdapter
-//            mMediaFileAdapter!!.setData(it)
         })
     }
 
@@ -110,23 +84,6 @@ class FavoriteFragment : Fragment() {
         viewDataBinding.layoutSwipeRefresh.setOnRefreshListener {
             viewDataBinding.layoutSwipeRefresh.isRefreshing = false
             setMediaDBList()
-        }
-    }
-
-    override fun onDestroy() {
-        MLog.d(mTAG, "onDestroy()")
-
-        if (mLikeReceiver != null) {
-            requireActivity().unregisterReceiver(mLikeReceiver)
-            mLikeReceiver = null
-        }
-
-        super.onDestroy()
-    }
-
-    inner class LikeReceiver : BroadcastReceiver() {
-        override fun onReceive(context: Context, intent: Intent) {
-//            setMediaDBList()
         }
     }
 }
