@@ -54,10 +54,7 @@ class PageKeyedRemoteMediator(
 
             MLog.d(TAG, "loadType:"+loadType.name + " / page:" + page)
 
-            val data = imageAPI.getAPI(
-                query = query,
-                page = ++page
-            )
+            val data = imageAPI.getAPI(query = query, page = ++page)
 
             var items = data.items
 
@@ -85,3 +82,6 @@ class PageKeyedRemoteMediator(
         }
     }
 }
+
+
+
